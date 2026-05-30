@@ -1,0 +1,5 @@
+export enum EduFileErrorHighlightLevel {
+  NONE = "NONE",
+  ALL_PROBLEMS = "ALL_PROBLEMS",
+  TEMPORARY_SUPPRESSION = "TEMPORARY_SUPPRESSION",
+}
