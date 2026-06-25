@@ -1,4 +1,5 @@
-export { loadCourseProject } from "./loader"
+export { loadCourseProject } from "./disk-loader"
+export { loadCourseProjectFromZip } from "./zip-loader"
 
 // Core models
 export { EduCourse } from "./courseFormat/EduCourse"

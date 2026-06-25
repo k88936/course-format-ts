@@ -1,0 +1,1 @@
+This library is a ts version for JetBrains Academy format.
