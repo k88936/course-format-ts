@@ -3,12 +3,35 @@ const assert = require("node:assert/strict")
 const test = require("node:test")
 const fs = require("node:fs")
 const os = require("node:os")
+const { zipSync } = require("fflate")
 
-const { loadCourseProject, EduCourse, EduTask, ChoiceTask, MatchingTask, SortingTask, TableTask } = require("../dist")
+const { loadCourseYamlFromZip, EduCourse, EduTask, ChoiceTask, MatchingTask, SortingTask, TableTask } = require("../dist")
+
+/**
+ * Recursively walk a directory and create a zip buffer from its contents.
+ */
+function createZipFromDir(dirPath) {
+  const files = {}
+  function collectFiles(currentPath, relativePath) {
+    const entries = fs.readdirSync(currentPath, { withFileTypes: true })
+    for (const entry of entries) {
+      const fullPath = path.join(currentPath, entry.name)
+      const relPath = relativePath ? `${relativePath}/${entry.name}` : entry.name
+      if (entry.isDirectory()) {
+        collectFiles(fullPath, relPath)
+      } else {
+        files[relPath] = fs.readFileSync(fullPath)
+      }
+    }
+  }
+  collectFiles(dirPath, "")
+  return zipSync(files)
+}
 
 test("loads example course project into a Course object with correct class types", async () => {
   const projectPath = path.join(__dirname, "..", "example-course-project")
-  const course = await loadCourseProject(projectPath)
+  const data = createZipFromDir(projectPath)
+  const course = await loadCourseYamlFromZip(data)
 
   // Course-level checks
   assert.ok(course instanceof EduCourse)
@@ -77,7 +100,8 @@ record: -1
       "lesson1/task1/Task.txt": "placeholder",
     })
 
-    const course = await loadCourseProject(tmpDir)
+    const data = createZipFromDir(tmpDir)
+    const course = await loadCourseYamlFromZip(data)
     const task = course.content[0].content[0]
 
     assert.ok(task instanceof ChoiceTask, "Should be a ChoiceTask instance")
@@ -126,7 +150,8 @@ status: Unchecked
 `,
     })
 
-    const course = await loadCourseProject(tmpDir)
+    const data = createZipFromDir(tmpDir)
+    const course = await loadCourseYamlFromZip(data)
     const task = course.content[0].content[0]
 
     assert.ok(task instanceof MatchingTask, "Should be a MatchingTask instance")
@@ -164,7 +189,8 @@ status: Unchecked
 `,
     })
 
-    const course = await loadCourseProject(tmpDir)
+    const data = createZipFromDir(tmpDir)
+    const course = await loadCourseYamlFromZip(data)
     const task = course.content[0].content[0]
 
     assert.ok(task instanceof SortingTask, "Should be a SortingTask instance")
@@ -206,7 +232,8 @@ status: Unchecked
 `,
     })
 
-    const course = await loadCourseProject(tmpDir)
+    const data = createZipFromDir(tmpDir)
+    const course = await loadCourseYamlFromZip(data)
     const task = course.content[0].content[0]
 
     assert.ok(task instanceof TableTask, "Should be a TableTask instance")
@@ -266,7 +293,8 @@ record: -1
         "lesson1/task1/Task.txt": "test",
       })
 
-      const course = await loadCourseProject(tmpDir)
+      const data = createZipFromDir(tmpDir)
+      const course = await loadCourseYamlFromZip(data)
       const task = course.content[0].content[0]
 
       const ExpectedClass = classMap[expectedClassName]

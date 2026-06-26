@@ -2,7 +2,7 @@ const assert = require("node:assert/strict")
 const test = require("node:test")
 
 const {
-  loadCourseProjectFromZip,
+  loadCourseJsonFromZip,
   EduCourse,
   Section,
   EduTask,
@@ -21,7 +21,7 @@ test("loads a course from a zip URL into a Course object", async () => {
   const zipData = new Uint8Array(arrayBuffer)
 
   // Load the course from the zip
-  const course = await loadCourseProjectFromZip(zipData)
+  const course = await loadCourseJsonFromZip(zipData)
 
   // Course-level checks
   assert.ok(course instanceof EduCourse, "Course should be an EduCourse instance")

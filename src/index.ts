@@ -1,5 +1,5 @@
-export { loadCourseProject } from "./disk-loader"
-export { loadCourseProjectFromZip } from "./zip-loader"
+export { loadCourseYamlFromZip } from "./yaml-format-loader"
+export { loadCourseJsonFromZip } from "./json-format-loader"
 
 // Core models
 export { EduCourse } from "./courseFormat/EduCourse"
