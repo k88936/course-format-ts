@@ -10,6 +10,7 @@ import { EduFileErrorHighlightLevel } from "./EduFileErrorHighlightLevel"
 import { exceedsBase64ContentLimit, getBinaryFileLimit, isBinary, mimeFileType } from "./fileUtils"
 import { logger } from "./loggerUtils"
 import type { TaskFile } from "./TaskFile"
+import { COURSE_CONTENTS_FOLDER } from "./EduFormatNames"
 
 export class EduFile {
   name = ""
@@ -96,7 +97,7 @@ export class EduFile {
   }
 
   get pathInArchive(): string {
-    return this.pathInCourse
+    return `${COURSE_CONTENTS_FOLDER}/${this.pathInCourse}`
   }
 }
 

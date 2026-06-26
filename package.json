@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "npm run build && node --test"
+    "test": "npm run build && node --test dist/tests/yamlLoader.test.js dist/tests/yamlFormat.test.js dist/tests/courseArchiveReader.test.js"
   },
   "dependencies": {
     "fflate": "^0.8.3",
