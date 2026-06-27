@@ -85,13 +85,14 @@ function dumpItems(items: any[], depth: number) {
         const type = item.constructor?.name ?? "?"
         console.log(`${indent}${type}: ${name}`)
         if (item instanceof Section) {
-            console.log(`${indent}  type: ${(item as any).itemType}`)
+            console.log(`${indent}  type: ${item.itemType}`)
             dumpItems(item.items, depth + 1)
         } else if (item instanceof Lesson) {
-            console.log(`${indent}  type: ${(item as any).itemType}`)
+            console.log(`${indent}  type: ${item.itemType}`)
             dumpItems(item.items, depth + 1)
         } else if (item instanceof Task) {
-            console.log(`${indent}  type: ${(item as any).itemType}`)
+            console.log(`${indent}  type: ${item.itemType}`)
+            console.log(`${indent}  desc: ${item.descriptionText.length} len`)
             const files = item.getTaskFileValues()
             if (files.length > 0) {
                 console.log(`${indent}  files: [${files.map((f: any) => f.name).join(", ")}]`)
