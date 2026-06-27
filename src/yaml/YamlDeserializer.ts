@@ -13,7 +13,6 @@ import { IdeTask } from "../courseFormat/tasks/IdeTask"
 import { UnsupportedTask } from "../courseFormat/tasks/UnsupportedTask"
 import { ChoiceTask } from "../courseFormat/tasks/choice/ChoiceTask"
 import { StudyItem } from "../courseFormat/StudyItem"
-import { CourseMode } from "../courseFormat/CourseMode"
 import { COURSE_CONFIG, SECTION_CONFIG, LESSON_CONFIG, TASK_CONFIG, REMOTE_COURSE_CONFIG, REMOTE_SECTION_CONFIG, REMOTE_LESSON_CONFIG, REMOTE_TASK_CONFIG } from "./YamlConfigSettings"
 import { YamlMixinNames } from "./YamlMixinNames"
 import { buildCourse } from "./format/CourseYamlUtil"
@@ -57,8 +56,6 @@ export function deserializeCourse(configFileText: string): Course | null {
   }
 
   const course = buildCourse(yaml)
-  const courseMode = yaml.mode as string | undefined
-  course.courseMode = courseMode != null ? CourseMode.STUDENT : CourseMode.EDUCATOR
   course.isMarketplace = (yaml.type as string | undefined) === YamlMixinNames.MARKETPLACE_YAML_TYPE
   return course
 }
@@ -173,14 +170,4 @@ export function getChildrenConfigFileNames(item: StudyItem): string[] {
   if (item instanceof Section) return [LESSON_CONFIG]
   if (item instanceof Lesson) return [TASK_CONFIG]
   throw new Error("Unexpected StudyItem type")
-}
-
-/**
- * Get CourseMode from course config text
- */
-export function getCourseMode(courseConfigText: string): CourseMode | undefined {
-  const yaml: any = parseYaml(courseConfigText)
-  const courseModeText = yaml?.[YamlMixinNames.MODE] as string | undefined
-  if (courseModeText == null) return undefined
-  return courseModeText === CourseMode.STUDENT ? CourseMode.STUDENT : CourseMode.EDUCATOR
 }

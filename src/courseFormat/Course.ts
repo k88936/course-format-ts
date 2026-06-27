@@ -1,5 +1,4 @@
 import { LessonContainer } from "./LessonContainer"
-import { CourseMode } from "./CourseMode"
 import { CourseVisibility } from "./CourseVisibility"
 import { EduFile } from "./EduFile"
 import { PluginInfo } from "./PluginInfo"
@@ -15,7 +14,6 @@ export abstract class Course extends LessonContainer {
   description = ""
   environment = DEFAULT_ENVIRONMENT
   environmentSettings: Record<string, string> = {}
-  courseMode: CourseMode = CourseMode.STUDENT
   solutionsHidden = false
   disabledFeatures: string[] = []
   visibility: CourseVisibility = CourseVisibility.LocalVisibility
@@ -149,10 +147,6 @@ export abstract class Course extends LessonContainer {
     return PYCHARM
   }
 
-  get isStudy(): boolean {
-    return this.courseMode === CourseMode.STUDENT
-  }
-
   override sortItems(): void {
     super.sortItems()
     this.sections.forEach((section) => section.sortItems())
@@ -188,13 +182,13 @@ export abstract class Course extends LessonContainer {
   }
 
   addNonEditableFile(path?: string | null): void {
-    if (path && this.isStudy) {
+    if (path) {
       this.nonEditableFiles.add(path)
     }
   }
 
   removeNonEditableFile(path?: string | null): void {
-    if (path && this.isStudy) {
+    if (path) {
       this.nonEditableFiles.delete(path)
     }
   }
