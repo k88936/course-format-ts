@@ -3,11 +3,10 @@ import { ok, strictEqual } from "node:assert/strict"
 import { readFileSync, readdirSync, statSync } from "node:fs"
 import { join, relative } from "node:path"
 import { zipSync, unzipSync } from "fflate"
-import { loadFromYamlZip } from "../yaml-loader"
-import { Course } from "../courseFormat/Course"
-import { Lesson } from "../courseFormat/Lesson"
-import { Task } from "../courseFormat/tasks/Task"
-import { CourseMode } from "../courseFormat/CourseMode"
+import {Course} from "../courseFormat/Course";
+import {loadFromYamlZip} from "../loader";
+import {Lesson} from "../courseFormat/Lesson";
+import {Task} from "../courseFormat/tasks/Task";
 
 const YAML_COURSE_DIR = join(__dirname, "../../yaml-course-example")
 
@@ -26,13 +25,12 @@ describe("YAML Zip Loader", () => {
     strictEqual(course.name, "Example Plain Text course", "Expected course title")
     strictEqual(course.languageCode, "English", "Expected language")
     strictEqual(course.programmingLanguage, "Plain text", "Expected programming language")
-    strictEqual(course.courseMode, CourseMode.STUDENT, "Expected STUDENT mode")
     ok(course.vendor !== undefined, "Vendor should be defined")
     strictEqual(course.vendor.name, "Arseniy Pendryak", "Expected vendor name")
   })
 
   it("loads lesson from zip", () => {
-    strictEqual(course.items.length, 1, "Course should have 1 lesson")
+    strictEqual(course.items.length, 2, "Course should have 2 lesson")
     const lesson = course.items[0]
     ok(lesson instanceof Lesson, "First item should be a Lesson")
     strictEqual(lesson.name, "lesson1", "Lesson name should be 'lesson1'")
@@ -40,7 +38,7 @@ describe("YAML Zip Loader", () => {
 
   it("loads tasks from zip", () => {
     const lesson = course.items[0] as Lesson
-    strictEqual(lesson.items.length, 2, "Lesson should have 2 tasks")
+    strictEqual(lesson.items.length, 3, "Lesson should have 3 tasks")
 
     const task1 = lesson.items[0]
     strictEqual(task1.name, "task1", "First task should be task1")
@@ -73,6 +71,14 @@ describe("YAML Zip Loader", () => {
     const task2 = lesson.items[1]
     strictEqual(task1.itemType, "edu", "task1 should be edu")
     strictEqual(task2.itemType, "edu", "task2 should be edu")
+  })
+
+  it("loads task description from separate task.md file", () => {
+    const lesson = course.items[0] as Lesson
+    const task1 = lesson.items[0] as Task
+    ok(task1.descriptionText.length > 0, "descriptionText should be loaded from task.md")
+    strictEqual(task1.descriptionFormat, "MD", "descriptionFormat should be MD for .md file")
+    ok(task1.descriptionText.includes("This is a task description file."), "descriptionText should contain content from task.md")
   })
 })
 

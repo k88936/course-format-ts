@@ -2,7 +2,6 @@
 export { EduCourse } from "./courseFormat/EduCourse"
 export { CourseraCourse } from "./courseFormat/CourseraCourse"
 export { Course } from "./courseFormat/Course"
-export { CourseMode } from "./courseFormat/CourseMode"
 export { Lesson } from "./courseFormat/Lesson"
 export { FrameworkLesson } from "./courseFormat/FrameworkLesson"
 export { Section } from "./courseFormat/Section"
@@ -40,7 +39,6 @@ export {
   deserializeTask as yamlDeserializeTask,
   deserializeRemoteItem,
   getChildrenConfigFileNames,
-  getCourseMode,
 } from "./yaml/YamlDeserializer"
 export { parseYaml, stringifyYaml, CURRENT_YAML_VERSION } from "./yaml/YamlMapper"
 export { TitledStudyItem } from "./yaml/TitledStudyItem"
@@ -56,7 +54,7 @@ export {
 } from "./yaml/errorHandling/InvalidYamlFormatException"
 
 // Loader
-export { loadFromYamlZip } from "./yaml-loader"
+export { loadFromYamlZip } from "./loader"
 export {
   YamlLoadingException,
   RemoteYamlLoadingException,
@@ -65,3 +63,30 @@ export {
   unknownConfigMessage,
   unexpectedItemTypeMessage,
 } from "./yaml/errorHandling/YamlLoadingException"
+
+// VFS abstraction
+export type { VirtualFileSystem } from "./yaml/VirtualFileSystem"
+
+// YAML Loader (deserialize + path helpers)
+export {
+  studyItemExtGetPathToChildren,
+  taskExtDirName,
+  taskExtFindDir,
+  studyItemExtGetDir,
+  getConfigFileForChild,
+  deserializeContent,
+  deserializeChildrenIfNeeded,
+} from "./yaml/YamlLoader"
+
+// YAML Deep Loader (main loadCourse entry point + task helpers)
+export {
+  loadCourse,
+  studyItemExtVisitTasks,
+  taskExtGetTaskDirectory,
+  taskExtToDescriptionFormat,
+  taskExtGetDescriptionFile,
+  taskExtUpdateDescriptionTextAndFormat,
+  loadRemoteInfo,
+  loadRemoteInfoRecursively,
+  setDescriptionInfo,
+} from "./yaml/YamlDeepLoader"

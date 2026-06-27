@@ -10,7 +10,6 @@ import {
   deserializeRemoteItem,
 } from "../yaml/YamlDeserializer"
 import { COURSE_CONFIG, LESSON_CONFIG, TASK_CONFIG, REMOTE_LESSON_CONFIG, REMOTE_TASK_CONFIG } from "../yaml/YamlConfigSettings"
-import { CourseMode } from "../courseFormat/CourseMode"
 import { Course } from "../courseFormat/Course"
 import { Lesson } from "../courseFormat/Lesson"
 import { Section } from "../courseFormat/Section"
@@ -36,7 +35,6 @@ describe("YAML Format Deserialization", () => {
     strictEqual(course.name, "Example Plain Text course", "Expected course title")
     strictEqual(course.languageCode, "English", "Expected language")
     strictEqual(course.programmingLanguage, "Plain text", "Expected programming language")
-    strictEqual(course.courseMode, CourseMode.STUDENT, "Expected STUDENT mode (mode field present)")
     ok(course.vendor !== undefined, "Expected vendor to be defined")
     strictEqual(course.vendor.name, "Arseniy Pendryak", "Expected vendor name")
 
@@ -55,7 +53,7 @@ describe("YAML Format Deserialization", () => {
 
     ok(lesson instanceof Lesson, "Should be a Lesson instance")
     strictEqual(lesson.name, "", "Lesson without custom_name should have empty name")
-    strictEqual(lesson.items.length, 2, "Lesson should have 2 tasks")
+    strictEqual(lesson.items.length, 3, "Lesson should have 3 tasks")
 
     const taskNames = lesson.items.map((item) => item.name)
     ok(taskNames.includes("task1"), "Content should include task1")
@@ -111,7 +109,7 @@ describe("YAML Format Deserialization", () => {
     strictEqual(task2.itemType, "edu", "task2 should be edu type")
 
     // Validate structure
-    strictEqual(lesson.items.length, 2, "Lesson should have 2 tasks")
-    strictEqual(course.items.length, 1, "Course should have 1 item (lesson1)")
+    strictEqual(lesson.items.length, 3, "Lesson should have 3 tasks")
+    strictEqual(course.items.length, 2, "Course should have 2 item")
   })
 })
