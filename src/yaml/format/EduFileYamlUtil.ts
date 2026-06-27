@@ -3,6 +3,7 @@
 import { EduFile } from "../../courseFormat/EduFile"
 import { TaskFile } from "../../courseFormat/TaskFile"
 import { AnswerPlaceholder } from "../../courseFormat/AnswerPlaceholder"
+import { buildAnswerPlaceholder } from "./AnswerPlaceholderYamlUtil"
 import { EduFileErrorHighlightLevel } from "../../courseFormat/EduFileErrorHighlightLevel"
 
 export interface EduFileYaml {
@@ -19,7 +20,13 @@ export interface AdditionalFileYaml {
 export interface TaskFileYaml {
   name: string
   visible?: boolean
-  placeholders?: AnswerPlaceholder[]
+  placeholders?: Array<{
+    offset: number
+    length: number
+    placeholder_text: string
+    dependency?: any
+    is_visible?: boolean
+  }>
   editable?: boolean
   propagatable?: boolean
   highlight_level?: string
@@ -44,7 +51,13 @@ export function buildTaskFile(yaml: TaskFileYaml): TaskFile {
     taskFile.errorHighlightLevel = yaml.highlight_level as EduFileErrorHighlightLevel
   }
   if (yaml.placeholders != null) {
-    taskFile.answerPlaceholders = yaml.placeholders
+    taskFile.answerPlaceholders = yaml.placeholders.map(p => buildAnswerPlaceholder({
+      offset: p.offset,
+      length: p.length,
+      placeholder_text: p.placeholder_text,
+      dependency: p.dependency,
+      is_visible: p.is_visible,
+    }))
   }
   return taskFile
 }

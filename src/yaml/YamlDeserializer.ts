@@ -6,6 +6,7 @@ import { Section } from "../courseFormat/Section"
 import { Lesson } from "../courseFormat/Lesson"
 import { FrameworkLesson } from "../courseFormat/FrameworkLesson"
 import { Task } from "../courseFormat/tasks/Task"
+import { TaskFile } from "../courseFormat/TaskFile"
 import { EduTask } from "../courseFormat/tasks/EduTask"
 import { OutputTask } from "../courseFormat/tasks/OutputTask"
 import { TheoryTask } from "../courseFormat/tasks/TheoryTask"
@@ -19,6 +20,7 @@ import { buildCourse } from "./format/CourseYamlUtil"
 import { buildSection } from "./format/SectionYamlUtil"
 import { buildLesson } from "./format/LessonYamlUtil"
 import { buildFrameworkLesson } from "./format/FrameworkLessonYamlMixin"
+import { buildTaskFile } from "./format/EduFileYamlUtil"
 import { buildRemoteCourse } from "./format/remote/RemoteCourseYamlMixin"
 import { RemoteStudyItem } from "./RemoteStudyItem"
 import { loadingError } from "./errorHandling/YamlLoadingException"
@@ -108,12 +110,23 @@ export function deserializeTask(configFileText: string, parentLesson?: Lesson, t
 }
 
 function buildDeserializedTask<T extends Task>(yaml: any, createTask: () => T): T {
-  // TODO: use TaskFileYamlUtil to deserialize files and other task properties
   const task = createTask()
   task.name = yaml.custom_name ?? task.name
   if (yaml.feedback_link != null) task.feedbackLink = yaml.feedback_link
   if (yaml.solution_hidden != null) task.solutionHidden = yaml.solution_hidden
   if (yaml.tags != null) task.contentTags = yaml.tags
+
+  // Deserialize files with placeholders from YAML (mirrors Kotlin mapper with TaskFileYamlMixin)
+  const fileEntries: any[] = yaml.files ?? []
+  const taskFiles: TaskFile[] = []
+  for (const fileEntry of fileEntries) {
+    const taskFile = buildTaskFile(fileEntry)
+    taskFiles.push(taskFile)
+  }
+  if (taskFiles.length > 0) {
+    task.setTaskFileValues(taskFiles)
+  }
+
   return task
 }
 

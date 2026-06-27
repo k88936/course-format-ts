@@ -8,12 +8,10 @@ import {Section} from "../courseFormat/Section"
 import {Lesson} from "../courseFormat/Lesson"
 import {FrameworkLesson} from "../courseFormat/FrameworkLesson"
 import {Task} from "../courseFormat/tasks/Task"
-import {TaskFile} from "../courseFormat/TaskFile"
 import {LessonContainer} from "../courseFormat/LessonContainer"
 import {DescriptionFormat} from "../courseFormat/DescriptionFormat"
 import {
     COURSE_CONFIG,
-    TASK_CONFIG,
     REMOTE_COURSE_CONFIG,
     REMOTE_SECTION_CONFIG,
     REMOTE_LESSON_CONFIG,
@@ -89,10 +87,10 @@ export function studyItemExtVisitTasks(item: StudyItem, action: (task: Task) => 
 }
 
 /**
- * Load task files from the VFS into each Task object.
- * For each file entry in the task's YAML config, reads the actual file content
- * from the virtual filesystem and creates a TaskFile instance.
- * Mirrors the loadTaskFiles logic from dist/yaml-loader.js.
+ * Load task file text content from the VFS into existing TaskFile objects.
+ * Task files and their placeholders are already deserialized from YAML config
+ * by buildDeserializedTask in YamlDeserializer.ts. This function only reads
+ * the actual file content from the virtual filesystem.
  *
  * @param course the course containing tasks
  * @param vfs the virtual filesystem
@@ -108,24 +106,9 @@ export function loadTaskFiles(
             const taskDir = taskExtGetTaskDirectory(task, vfs, courseDir)
             if (taskDir == null) continue
 
-            // Find and read the task-info.yaml to get the files list
-            const taskConfigPath = vfs.findChild(taskDir, TASK_CONFIG)
-            if (taskConfigPath == null) continue
-
-            const taskConfigText = vfs.loadText(taskConfigPath)
-            const taskYaml: any = parseYaml(taskConfigText) ?? {}
-            const fileEntries: any[] = taskYaml.files ?? []
-
-            for (const fileEntry of fileEntries) {
-                const fileName: string = fileEntry.name
-                const isVisible: boolean = fileEntry.visible !== false
-
+            for (const taskFile of task.getTaskFileValues()) {
                 // Look for the actual file content under the task directory
-                const filePath = vfs.findChild(taskDir, fileName)
-                const taskFile = new TaskFile()
-                taskFile.name = fileName
-                taskFile.isVisible = isVisible
-                taskFile.task = task
+                const filePath = vfs.findChild(taskDir, taskFile.name)
                 if (filePath != null) {
                     try {
                         taskFile.text = vfs.loadText(filePath)
@@ -133,7 +116,6 @@ export function loadTaskFiles(
                         // File not found or unreadable — leave text empty
                     }
                 }
-                task.addTaskFileInstance(taskFile)
             }
         }
     })

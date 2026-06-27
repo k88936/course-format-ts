@@ -93,6 +93,7 @@ function dumpItems(items: any[], depth: number) {
         } else if (item instanceof Task) {
             console.log(`${indent}  type: ${item.itemType}`)
             console.log(`${indent}  desc: ${item.descriptionText.length} len`)
+            console.log(`${indent}  placeholders: ${item.files.map(f=>f.answerPlaceholders.length)}`)
             const files = item.getTaskFileValues()
             if (files.length > 0) {
                 console.log(`${indent}  files: [${files.map((f: any) => f.name).join(", ")}]`)
